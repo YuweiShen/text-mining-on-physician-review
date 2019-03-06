@@ -34,6 +34,7 @@ stop.update(["'s","'ve"])
 # Data structure: why use set to store feature- eliminate redundency for each customer
 
 def find_frequent(cur_doc_features):
+    cur_doc_features=tuple(cur_doc_features)
     n_sentence=len(cur_doc_features)
     relim_input = itemmining.get_relim_input(cur_doc_features)# transform the input
     item_sets = itemmining.relim(relim_input, min_support=max(2,0.05*n_sentence))# Apriori rule mining; 0.05 is self-defined
@@ -43,6 +44,7 @@ def find_frequent(cur_doc_features):
 all_features=[]
 past_doc=reviewset['doctor'][0]
 cur_doc_features=[]
+j=1
 for i in range(len(reviews)):# for each customer   
     if reviews[i] is not np.nan: 
         review=reviews[i]
@@ -62,12 +64,13 @@ for i in range(len(reviews)):# for each customer
         if reviewset['doctor'][i]==past_doc: # the same as the past doctor
             cur_doc_features.append(review_features)
         if (reviewset['doctor'][i]!=past_doc) or i==len(reviews)-1: # at the end of one doctor's reviews
-          
-            
-            cur_doc_features=[]# delete the past doctor's information
+            j+=1
+            print(j)
+            all_features.append(find_frequent(cur_doc_features)          
+            cur_doc_features=[] # delete the past doctor's information
             cur_doc_features.append(review_features)
             past_doc=reviewset['doctor'][i] # refresh the doctor mark
-     # now we got a list of features of 170 doctors stored in all_features     
+            # now we got a list of features of 170 doctors stored in all_features     
         
 
 # the all_features is a list of feature dictionary of all physicians   
