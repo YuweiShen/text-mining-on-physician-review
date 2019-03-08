@@ -42,11 +42,21 @@ def find_frequent(cur_doc_features):
 
      
 all_features=[]
-past_doc=reviewset['doctor'][0]
+cur_doc=reviewset['doctor'][0]
 cur_doc_features=[]
-j=1
+
 for i in range(len(reviews)):# for each customer   
-    if reviews[i] is not np.nan: 
+    if reviews[i] is np.nan:# if the reviews of a certain doctor is all nan, then append '[]'
+        if (i<len(reviews)-1) and (reviewset['doctor'][i+1]!=reviewset['doctor'][i]):# mark the end of a doctor's reviews
+            if cur_doc_features is []:
+                all_features.append([])
+            else:
+                all_features.append(find_frequent(cur_doc_features))
+                cur_doc_features=[]
+                cur_doc=reviewset['doctor'][i+1]
+        elif i==len(reviews)-1:
+            all_features.append(find_frequent(cur_doc_features))
+    else:
         review=reviews[i]
         review_features=set() # if the current review and the first review belong to the same doctor and is not the last one, keep on mining features, otherwise start mining.
         sentences=nltk.sent_tokenize(review)
@@ -61,18 +71,17 @@ for i in range(len(reviews)):# for each customer
                     if lem not in stop: # remove stop words
                         review_features.add(lem)
         review_features=tuple(review_features) # adjust for the association mining
-        if reviewset['doctor'][i]==past_doc: # the same as the past doctor
+        if reviewset['doctor'][i]==cur_doc: # do not change doctor
             cur_doc_features.append(review_features)
-        if (reviewset['doctor'][i]!=past_doc) or i==len(reviews)-1: # at the end of one doctor's reviews
-            j+=1
-            print(j)
-            all_features.append(find_frequent(cur_doc_features)          
-            cur_doc_features=[] # delete the past doctor's information
-            cur_doc_features.append(review_features)
-            past_doc=reviewset['doctor'][i] # refresh the doctor mark
-            # now we got a list of features of 170 doctors stored in all_features     
+            if (i<len(reviews)-1) and (reviewset['doctor'][i] != reviewset['doctor'][i+1]):# at the end of one doctor's reviews
+                all_features.append(find_frequent(cur_doc_features))      
+                cur_doc_features=[] # delete the past doctor's information
+                cur_doc=reviewset['doctor'][i+1]              
+        if i==len(reviews)-1 :
+           all_features.append(find_frequent(cur_doc_features))      
+           
         
-
+ # now we got a list of features of 170 doctors stored in all_features   
 # the all_features is a list of feature dictionary of all physicians   
 # now calculate the frequency of each features
 feature_frequency=dict() 
