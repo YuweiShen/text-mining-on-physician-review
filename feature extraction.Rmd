@@ -1,30 +1,40 @@
 ---
 title: "Feature extraction on reviews of physicians"
 author: "Yuwei Shen"
+date : '3/14'
 output: html_document
 ---
 
+```{r setup, include=FALSE}
+library(reticulate)
+use_python('C:\\Anaconda',required = T)
+```
+
+
 ## Overview
-In this small project, we extract physician's features by mining the online reviews of the paients.
-The main task is performed in the following steps. The whole process is performed with Python.
+&emsp;&emsp;In this small project, we aim to extract physician's features by mining the online reviews of the patients.
+There are plenty of information in the patients' reviews, therefore it is rather difficult and time-costing to read them one-by-one to make out what the patients are talking about and what they care most in the particular experience. The traditional methods calls for a lot of domain knowledge, but With the help of text mining, we can extract the feature of the doctors automatically. It is not only more convenient and cheap, but also more objective, eliminating the number of man-made errors.
+&emsp;&emsp;We are given a dataset with each customer's reviews and the corresponding doctors and we expect to get a table with the doctors and the frequency of the digged-put features. Therefore, the main task can be divided into 2 subtask. The first step is to find out what features the patients care most and the second step is to calculate each features frequency for each doctor.
 
-(1) POS tagger
 
-(2) Lemmatize the words 
+&emsp;&emsp;The whole process is performed in the Python environment.
 
-(3) Remove stop words
+## Read in the dataset
+We read in the dataset using pandas library, which is a powerful tool for data analysis. It is especially nice to read in csv files.
 
-(4) Association rule ming
+```{python}
+cwd = 'C:\\Users\\58454\\Desktop\\Summer research'
+reviewset = pd.read_csv(cwd+'\\reviews.csv')
+reviews = list(reviewset['reviews'])
+```
 
-(5) Feature pruning based on frequency
 
-(6) Generate the features subjectively
 
 
 ## Preprocess
-
+&emsp;&emsp;Since the dataset has some small problems which may affect further analysis, we have to make some adjustments with the data.
 In this step, we transform the original dataset with some steps. Firstly, we read in the data as a dataframe using Pandas library in the python. 
-Then notice that the commas in the patients' reviews are "\_" , which can influence further analysis, we restore the ','.
+Then notice that the commas in the patients' reviews are "_" , which can influence further analysis, we restore to the ','.
 After that, we merge the patients' reviews according to the physicians they commented on. 
 
 ## Frequent features extraction
