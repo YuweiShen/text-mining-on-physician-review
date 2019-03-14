@@ -1,0 +1,81 @@
+---
+title: "Feature extraction on reviews of physicians"
+author: "Yuwei Shen"
+date : '3/14'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(reticulate)
+use_python('C:\\Anaconda',required = T)
+```
+
+
+## Overview
+&emsp;&emsp;In this small project, we aim to extract physician's features by mining the online reviews of the patients.
+There are plenty of information in the patients' reviews, therefore it is rather difficult and time-costing to read them one-by-one to make out what the patients are talking about and what they care most in the particular experience. The traditional methods calls for a lot of domain knowledge, but With the help of text mining, we can extract the feature of the doctors automatically. It is not only more convenient and cheap, but also more objective, eliminating the number of man-made errors.
+&emsp;&emsp;We are given a dataset with each customer's reviews and the corresponding doctors and we expect to get a table with the doctors and the frequency of the digged-put features. Therefore, the main task can be divided into 2 subtask. The first step is to find out what features the patients care most and the second step is to calculate each features frequency for each doctor.
+
+
+&emsp;&emsp;The whole process is performed in the Python environment.
+
+## Read in the dataset
+We read in the dataset using pandas library, which is a powerful tool for data analysis. It is especially nice to read in csv files.
+
+```{python}
+cwd = 'C:\\Users\\58454\\Desktop\\Summer research'
+reviewset = pd.read_csv(cwd+'\\reviews.csv')
+reviews = list(reviewset['reviews'])
+```
+
+
+
+
+## Preprocess
+&emsp;&emsp;Since the dataset has some small problems which may affect further analysis, we have to make some adjustments with the data.
+In this step, we transform the original dataset with some steps. Firstly, we read in the data as a dataframe using Pandas library in the python. 
+Then notice that the commas in the patients' reviews are "_" , which can influence further analysis, we restore to the ','.
+After that, we merge the patients' reviews according to the physicians they commented on. 
+
+## Frequent features extraction
+
+### Part-of-speech tagging (POS)
+In this step, we use the NLTK library to first tokenize the sentence and then tokenize the words. The tokenization step can divide the reviews to discete sentences
+and divide the sentence to discrete words. After tokenization, we can use the part-of-speech tag for the words. Since nouns and noun phrases are more likely to form 
+a physician's feature and some verb can also be mapped into nouns, we selct both nouns and verbs from the sentences.
+
+### Lemmatize the words
+ Since the words that we choose have many forms, so we use the WordNet to lammatize the words so that they are uniform.
+ 
+### Remove stop words
+Notice that there are some stop words and punctuations that do not have actual meanings in the candidate features that we select, we remove them with the NLTK 
+stopwords corpora and puctuations int the string library. We also add elliptic utterances " 's" and " 've" to the stopword set.
+
+### Association rule mining
+In this section, we use the Apriori algorithm with the Pymining library to do the association rule mining. The goal of this step is to generate all frequent item sets with the minimum support and minimum confidence. 
+ We set the minimum support and the minimum confidence manually and then the algorithm find the frequent itemsets. The suppport here are defined as the frequency that the items appear together.  
+ 
+ ### Feature pruning based on frequency
+ In this step, we merge the candidate feature sets of each physician to a large candidate feature set and then divide the bigrams and single-word candidate features into 2 groups and select the frequent items based on the frequency of the itemsets. 
+
+We first extract bigrams from the candidate sets whose frequency are larger than 5 and then extract single words whose frequency are larger than 10 that does not appear in the bigram results to avoid redundency. 
+
+### Result explanation and feature generation
+We got the result of the features, which can be shown below. The results consist of phrases and single-word features.
+
+From this phrases result, we can see that the word combinations highly overlap and thus we can subjectively divide the phrases into several service features. 
+
+For example, ('feel','make' )and ('everything','explain') reflect the physician's bedside manner, ('take','time') reflect the service time, ('get','wait') reflect the waiting time and ('office','staff') reflect the office environment.
+
+From this single-word result goven above, we can also extract some new service features. 
+
+For example, ('treatment' )reflect the physician's professional knowledge, ('insurance') reflect the insurance process.
+
+ 
+
+
+
+
+
+
+
